@@ -1,20 +1,27 @@
-require("dotenv").config();
 const express = require("express");
-
-const axios = require("axios"); // Import fetch directly
-const bcrypt = require("bcrypt");
-
-const bodyParser = require("body-parser");
-const app = express();
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
+const bodyParser = require("body-parser");
 const path = require("path");
-const fs = require("fs");
 
+// Create an Express app
+const app = express();
+
+// Configure environment variables
+require("dotenv").config();
+
+// Middleware for parsing request bodies
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
+
+// Connect to MongoDB database
 const mongoURI = process.env.MONGO_URL;
-mongoose
-  .connect(mongoURI)
-  .catch((err) => console.error("MongoDB connection error", err));
+mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((err) => console.error("MongoDB connection error:", err));
 
+// Define mongoose schema and model for users
 const userSchema = new mongoose.Schema({
   _id: Number,
   name: String,
@@ -90,38 +97,33 @@ async function verifyRecaptcha(req, res, next) {
   }
 }
 
-app.post("/sign", verifyRecaptcha, async (req, res) => {
+app.post("/signup", async (req, res) => {
   try {
     const { name, email, password } = req.body;
     if (!name || !email || !password) {
       return res.status(400).json({ message: "Name, email, and password are required" });
     }
-    // Hash password before saving
-    const hashedPassword = await bcrypt.hash(password, 10); // Hash password with bcrypt
-    const _id = await getNextSequence();
-    const newUser = new User({ _id, name, email, password: hashedPassword }); // Save hashed password
-    const savedUser = await newUser.save();
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new User({ name, email, password: hashedPassword });
+    await newUser.save();
     res.status(200).json({ success: true });
   } catch (err) {
     console.error("Error signing up user:", err);
-    res.status(500).json({ message: err.message }); // Provide specific error message
+    res.status(500).json({ message: "An error occurred while signing up user" });
   }
 });
 
-app.post("/log", async (req, res) => {
+// Login route
+app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res
-        .status(401)
-        .json({ success: false, message: "User not found" });
+      return res.status(401).json({ success: false, message: "User not found" });
     }
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Invalid password" });
+      return res.status(401).json({ success: false, message: "Invalid password" });
     }
     res.json({
       success: true,
@@ -130,12 +132,7 @@ app.post("/log", async (req, res) => {
     });
   } catch (error) {
     console.error("Error finding user:", error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "An error occurred while processing your request",
-      });
+    res.status(500).json({ success: false, message: "An error occurred while processing your request" });
   }
 });
 
