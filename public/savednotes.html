@@ -59,10 +59,10 @@
     </nav>
     <div class="container mt-5">
         <h1>Your Saved Notes</h1>
+        <h3 id="personNameHeader"></h3> <!-- Name displayed as header -->
         <table class="table mt-3">
             <thead>
                 <tr>
-                    <th scope="col">Name</th>
                     <th scope="col">Title</th>
                     <th scope="col">Content</th>
                     <th scope="col">Actions</th>
@@ -105,6 +105,7 @@
             const personName = prompt("Enter your name:");
             if (personName) {
                 try {
+                    document.getElementById("personNameHeader").innerText = `Name: ${personName}`;
                     const response = await fetch(`/snotes?name=${personName}`); // Include name in the query string
                     const notes = await response.json();
                     displayNotes(notes);
@@ -122,13 +123,12 @@
             notesContainer.innerHTML = ""; // Clear previous notes
 
             if (notes.length === 0) {
-                const row = `<tr><td colspan="4">No notes found.</td></tr>`;
+                const row = `<tr><td colspan="3">No notes found.</td></tr>`;
                 notesContainer.innerHTML = row;
             } else {
                 notes.forEach(note => {
                     const row = `
                         <tr>
-                            <td>${note.name}</td>
                             <td>${note.title}</td>
                             <td>${note.content}</td>
                             <td>
@@ -151,30 +151,29 @@
             }
         }
 
-       async function deleteNote(name, title) {
-    if (confirm("Are you sure you want to delete this note?")) {
-        try {
-            const response = await fetch(`/note`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ name, title })
-            });
+        async function deleteNote(id) {
+            if (confirm("Are you sure you want to delete this note?")) {
+                try {
+                    const response = await fetch(`/note`, {
+                        method: "DELETE",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ id })
+                    });
 
-            if (response.ok) {
-                alert("Note deleted successfully.");
-                window.location.reload(); // Refresh the page to remove the deleted note
-            } else {
-                alert("Failed to delete note. Please try again later.");
+                    if (response.ok) {
+                        alert("Note deleted successfully.");
+                        window.location.reload(); // Refresh the page to remove the deleted note
+                    } else {
+                        alert("Failed to delete note. Please try again later.");
+                    }
+                } catch (error) {
+                    console.error("Error deleting note:", error);
+                    alert("An error occurred while deleting note.");
+                }
             }
-        } catch (error) {
-            console.error("Error deleting note:", error);
-            alert("An error occurred while deleting note.");
         }
-    }
-}
-
     </script>
 </body>
 </html>
