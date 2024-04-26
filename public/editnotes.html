@@ -104,13 +104,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         window.onload = async function () {
-    // Get query parameters from URL
+            
     const urlParams = new URLSearchParams(window.location.search);
     const name = decodeURIComponent(urlParams.get('name'));
     const title = decodeURIComponent(urlParams.get('title'));
 
     try {
-        // Fetch note details from the server
+
         const response = await fetch(`/note`, {
             method: 'POST',
             headers: {
@@ -120,10 +120,9 @@
         });
 
         if (response.ok) {
-            // Parse response JSON
+
             const note = await response.json();
 
-            // Fill form fields with note details
             document.getElementById('nameInput').value = note.name;
             document.getElementById('titleInput').value = note.title;
             document.getElementById('contentInput').value = note.content;
@@ -135,18 +134,18 @@
         alert('An error occurred while fetching note details.');
     }
 
-    // Submit form on save changes button click
+
     document.getElementById('editNoteForm').addEventListener('submit', async function (event) {
         event.preventDefault();
 
-        // Get updated note details from form
+
         const newName = document.getElementById('nameInput').value;
         const newTitle = document.getElementById('titleInput').value;
         const newContent = document.getElementById('contentInput').value;
 
-        // Send updated note data to server
+
         try {
-            // Fetch note by name and title instead of id
+            
             const response = await fetch(`/editnote?name=${name}&title=${title}`, {
                 method: 'PUT',
                 headers: {
@@ -157,7 +156,7 @@
 
             if (response.ok) {
                 alert('Note updated successfully.');
-                window.location.href = '/savednotes'; // Redirect to saved notes page after update
+                window.location.href = '/savednotes'; 
             } else {
                 alert('Failed to update note. Please try again later.');
             }
