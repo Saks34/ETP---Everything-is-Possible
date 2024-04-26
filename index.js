@@ -261,23 +261,24 @@ app.put("/editnote", async (req, res) => {
 
 
 app.delete("/note", async (req, res) => {
-  try {
-    const { id, name, title } = req.body;
+    try {
+        const { name, title } = req.body;
 
-    if (!id || !name || !title) {
-      return res.status(400).send("ID, name, and title parameters are required.");
-    }
+        if (!name || !title) {
+            return res.status(400).send("Name and title parameters are required.");
+        }
 
-    const deletedNote = await Note.findOneAndDelete({ _id: id, name: name, title: title });
-    if (!deletedNote) {
-      return res.status(404).send("Note not found.");
+        const deletedNote = await Note.findOneAndDelete({ name, title });
+        if (!deletedNote) {
+            return res.status(404).send("Note not found.");
+        }
+        res.send("Note deleted successfully.");
+    } catch (error) {
+        console.error("Error deleting note:", error);
+        res.status(500).send("Internal server error.");
     }
-    res.send("Note deleted successfully.");
-  } catch (error) {
-    console.error("Error deleting note:", error);
-    res.status(500).send("Internal server error.");
-  }
 });
+
 
 
 
