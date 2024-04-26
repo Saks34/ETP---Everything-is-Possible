@@ -3,7 +3,16 @@
   max-height: 500px;
   margin: 0 auto;
 }
+.btn-warning:hover {
+    background-color: #ffc107; /* Change to desired hover background color */
+    color: #212529; /* Change to desired hover text color */
+}
 
+/* Add hover effect to delete button */
+.btn-danger:hover {
+    background-color: #dc3545; /* Change to desired hover background color */
+    color: #fff; /* Change to desired hover text color */
+}
 .carousel-control-prev,
 .carousel-control-next {
   background-color: transparent;
