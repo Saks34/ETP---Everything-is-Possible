@@ -132,8 +132,8 @@
                             <td>${note.title}</td>
                             <td>${note.content}</td>
                             <td>
-                                <button class="btn btn-warning" onclick="editNote('${note._id}', '${note.name}', '${note.title}', '${note.content}')">Edit</button>
-                                <button class="btn btn-danger" onclick="deleteNote('${note._id}', '${note.name}', '${note.title}')">Delete</button>
+                                <button class="btn btn-outline-warning me-2" onclick="editNote('${note._id}', '${note.name}', '${note.title}', '${note.content}')">Edit</button>
+                                <button class="btn btn-danger me-2" onclick="deleteNote('${note._id}', '${note.name}', '${note.title}')">Delete</button>
                             </td>
                         </tr>`;
                     notesContainer.innerHTML += row;
