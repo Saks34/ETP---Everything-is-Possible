@@ -4,24 +4,23 @@ const bcrypt = require("bcryptjs");
 const bodyParser = require("body-parser");
 const path = require("path");
 
-// Create an Express app
 const app = express();
 
-// Configure environment variables
+
 require("dotenv").config();
 
-// Middleware for parsing request bodies
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-// Connect to MongoDB database
+
 const mongoURI = process.env.MONGO_URL;
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
-// Define mongoose schema and model for users
+
 const userSchema = new mongoose.Schema({
   _id: Number,
   name: String,
@@ -67,9 +66,9 @@ app.get("/createnotes", (req, res) => {
 app.get("/savednotes", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "savednotes.html"));
 });
-// Define route handler for /editnotes
+
 app.get("/editnotes", (req, res) => {
-  // Render the editnotes.html page
+
   res.sendFile(path.join(__dirname, "public", "editnotes.html"));
 });
 
@@ -104,8 +103,15 @@ app.post("/sign", async (req, res) => {
       return res.status(400).json({ message: "Name, email, and password are required" });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ name, email, password: hashedPassword });
+    
+
+    const userId = await getNextSequence();
+
+    const newUser = new User({ _id: userId, name, email, password: hashedPassword });
+
     await newUser.save();
+    
+
     res.status(200).json({ success: true });
   } catch (err) {
     console.error("Error signing up user:", err);
@@ -113,7 +119,7 @@ app.post("/sign", async (req, res) => {
   }
 });
 
-// Login route
+
 app.post("/log", async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -174,7 +180,7 @@ const noteSchema = new mongoose.Schema({
 });
 const Note = mongoose.model("Note", noteSchema);
 
-// Create a note
+
 app.post("/notes", async (req, res) => {
   try {
     const { name,title, content } = req.body;
@@ -187,8 +193,7 @@ app.post("/notes", async (req, res) => {
   }
 });
 
-// Get notes by person's name
-// Get notes by person's name
+
 app.get("/snotes", async (req, res) => {
   try {
     const personName = req.query.name; // Access name parameter from query string
@@ -209,17 +214,10 @@ app.get("/snotes", async (req, res) => {
 });
 
 
-
-
-
-
-
-// Get a specific note by ID
 app.post("/note", async (req, res) => {
   try {
     const { name, title } = req.body;
 
-    // Check if both name and title are provided
     if (!name || !title) {
       return res.status(400).send("Both name and title parameters are required.");
     }
@@ -236,12 +234,10 @@ app.post("/note", async (req, res) => {
 });
 
 
-// Update a note
 app.put("/editnote", async (req, res) => {
   try {
     const { name, title, content } = req.body;
 
-    // Check if all required parameters are provided
     if (!name || !title || !content) {
       return res.status(400).send("Name, title, and content parameters are required.");
     }
@@ -264,12 +260,10 @@ app.put("/editnote", async (req, res) => {
 });
 
 
-// Delete a note
 app.delete("/note", async (req, res) => {
   try {
     const { id, name, title } = req.body;
 
-    // Check if both ID, name, and title are provided
     if (!id || !name || !title) {
       return res.status(400).send("ID, name, and title parameters are required.");
     }
