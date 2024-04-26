@@ -190,3 +190,6 @@ label {
   justify-content: center;
   align-items: center;
 }
+.table {
+    width: 70%; /* Decrease table width */
+}
