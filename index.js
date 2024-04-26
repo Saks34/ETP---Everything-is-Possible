@@ -262,13 +262,13 @@ app.put("/editnote", async (req, res) => {
 
 app.delete("/note", async (req, res) => {
     try {
-        const { name, title } = req.body;
+        const { id, name, title } = req.body;
 
-        if (!name || !title) {
-            return res.status(400).send("Name and title parameters are required.");
+        if (!id || !name || !title) {
+            return res.status(400).send("ID, name, and title parameters are required.");
         }
 
-        const deletedNote = await Note.findOneAndDelete({ name, title });
+        const deletedNote = await Note.findOneAndDelete({ _id: id, name, title });
         if (!deletedNote) {
             return res.status(404).send("Note not found.");
         }
@@ -278,9 +278,6 @@ app.delete("/note", async (req, res) => {
         res.status(500).send("Internal server error.");
     }
 });
-
-
-
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT);
