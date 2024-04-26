@@ -62,11 +62,11 @@
         function askForName() {
             const name = prompt("Please enter your name:");
             if (name != null && name.trim() !== "") {
-                // Call function to fill title and content
+
                 fillTitleAndContent(name.trim());
             } else {
                 alert("Name is mandatory. Please enter your name.");
-                askForName(); // Ask again if no name is provided
+                askForName();
             }
         }
 
