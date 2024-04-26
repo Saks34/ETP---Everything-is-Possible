@@ -97,7 +97,7 @@ async function verifyRecaptcha(req, res, next) {
   }
 }
 
-app.post("/signup", async (req, res) => {
+app.post("/sign", async (req, res) => {
   try {
     const { name, email, password } = req.body;
     if (!name || !email || !password) {
@@ -114,7 +114,7 @@ app.post("/signup", async (req, res) => {
 });
 
 // Login route
-app.post("/login", async (req, res) => {
+app.post("/log", async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
